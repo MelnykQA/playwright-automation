@@ -11,11 +11,24 @@ from helpers.web_service import WebService
 from helpers.db import DataBase
 
 
-@fixture(autouse=True, scope='function')
-def preconditions():
+@fixture(autouse=True, scope='session')
+def preconditions(request):
     logging.info('preconditions started')
+    base_url = request.config.getoption('--base_url')
+    secure = request.config.getoption('--secure')
+    config = load_config(secure)
     yield
     logging.info('postconditions started')
+    web = WebService(base_url)
+    web.login(**config['users']['userRole3'])
+    for test in request.node.items:
+        if len(test.own_markers) > 0:
+            if test.own_markers[0].name == 'test_id':
+                if test.result_call.passed:
+                    web.report_test(test.own_markers[0].args[0], 'PASS')
+                if test.result_call.failed:
+                    web.report_test(test.own_markers[0].args[0], 'FAIL')
+
 
 
 @fixture(scope='session')
