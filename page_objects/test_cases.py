@@ -10,7 +10,6 @@ class TestCases:
     def delete_test_by_name(self, test_name: str):
         # Знаходимо рядок, що містить назву тесту
         row = self.page.get_by_role("row", name=test_name)
-
         # Перевіряємо, чи знайдено рядок
         if row:
             # Знаходимо кнопку видалення всередині рядка і натискаємо її
@@ -21,6 +20,7 @@ class TestCases:
                 print("Кнопка видалення не знайдена.")
         else:
             print("Рядок з назвою тесту не знайдено.")
+        self.page.wait_for_timeout(300)
 
 
     def check_columns_hidden(self):
